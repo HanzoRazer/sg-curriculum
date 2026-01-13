@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sg-curriculum://contracts/session_record_v1",
+  "title": "Session Record v1",
+  "description": "Local session record. Performance summarized; artifacts referenced via attachments.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "session_id",
+    "device_learner_id",
+    "started_at_utc",
+    "ended_at_utc",
+    "attempts"
+  ],
+  "properties": {
+    "schema_id": { "type": "string", "const": "session_record" },
+    "schema_version": { "type": "string", "const": "v1" },
+    "session_id": { "type": "string", "minLength": 6, "maxLength": 128 },
+    "device_learner_id": { "type": "string", "minLength": 6, "maxLength": 128 },
+    "started_at_utc": { "type": "string", "format": "date-time" },
+    "ended_at_utc": { "type": "string", "format": "date-time" },
+    "instrument_id": { "type": "string", "minLength": 3, "maxLength": 128 },
+    "attempts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["content_id", "kind"],
+        "properties": {
+          "content_id": { "type": "string", "minLength": 3, "maxLength": 128 },
+          "kind": { "type": "string", "enum": ["lesson", "drill"] },
+          "duration_seconds": { "type": "integer", "minimum": 0, "maximum": 21600 },
+          "tempo_bpm": { "type": "integer", "minimum": 30, "maximum": 260 },
+          "summary": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timing_error_ms_p50": { "type": "number" },
+              "timing_error_ms_p95": { "type": "number" },
+              "note_accuracy_percent": { "type": "number", "minimum": 0, "maximum": 100 },
+              "streak_seconds": { "type": "integer", "minimum": 0, "maximum": 21600 }
+            }
+          },
+          "attachment_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 3, "maxLength": 128 },
+            "maxItems": 32
+          }
+        }
+      }
+    }
+  }
+}

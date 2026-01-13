@@ -1,0 +1,24 @@
+name: core-ci
+
+on:
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "scripts/ci/**"
+      - ".github/workflows/core_ci.yml"
+  push:
+    branches: ["main"]
+
+jobs:
+  contracts-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Contracts governance gate
+        run: python scripts/ci/check_contracts_governance.py --repo-root . --base-ref origin/main
+
+      - name: No ToolBox terms gate
+        run: python scripts/ci/check_no_toolbox_terms.py --repo-root .
