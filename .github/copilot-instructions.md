@@ -1,110 +1,91 @@
 # Copilot Instructions for sg-curriculum
 
-## Project Overview
+## Domain Boundaries (CI-Enforced)
 
-Local-first Smart Guitar curriculum + coaching + learner/session state. This repo owns curriculum objects, device-local learner identity, performance summaries, and structured coaching outputs.
+This repo owns: curriculum, coaching, device-local learner identity, performance summaries.
+**Does NOT own**: CAM/toolpaths/G-code/RMOS—those belong to ToolBox repo.
 
-**Does NOT own**: CAM/toolpaths/G-code/RMOS artifacts—those belong to ToolBox (separate repo).
+**Blocked terms** in `contracts/`: `gcode`, `toolpath`, `rmos`, `fixture`, `feedrate`, `spindle`, `cam`  
+CI gate `scripts/ci/check_no_toolbox_terms.py` will fail if these appear.
 
-## Architecture
+## Contract Governance (Must Follow)
 
-```
-sg-curriculum/
-├── contracts/           # JSON Schema spine contracts (immutable after public release)
-│   ├── *_v1.schema.json # Schema definitions
-│   ├── *_v1.schema.sha256 # Hash companions (CI-enforced)
-│   └── CONTRACTS_VERSION.json # Release gate flag
-├── runtime/             # Local-first Python runtime
-│   ├── config.py        # RuntimeConfig (data_dir, db_path, secret_path)
-│   ├── identity.py      # Device-local identity (no accounts)
-│   ├── db.py            # SQLite schema + migrations
-│   ├── store.py         # CRUD helpers for catalog/sessions/assignments
-│   ├── attachments.py   # Content-hash blob store
-│   ├── policy.py        # Rule-based coach v0 (pick_next_assignment, coach_feedback)
-│   ├── engine.py        # Glue: init_runtime, compute_assignment, ingest_session
-│   └── cli.py           # CLI entry point (sgc command)
-├── docs/                # Governance + policy docs
-├── scripts/ci/          # CI gate scripts (Python)
-├── tests/               # pytest test suite
-└── .github/workflows/   # GitHub Actions CI
-```
+Every `.schema.json` in `contracts/` requires:
+1. A `.schema.sha256` companion (64 lowercase hex, no newline)
+2. An entry in `contracts/CHANGELOG.md` mentioning the schema stem name
 
-## Critical Patterns
-
-### Contract Governance (Scenario-B gates)
-- Every `.schema.json` requires a companion `.schema.sha256` (64 lowercase hex)
-- Schema changes **must** update `contracts/CHANGELOG.md` mentioning the stem
-- Once `CONTRACTS_VERSION.json` has `"public_released": true`, v1 schemas are **immutable**
-- See [check_contracts_governance.py](scripts/ci/check_contracts_governance.py)
-
-### Domain Boundary Enforcement
-- **Blocked terms** in contracts/: `gcode`, `toolpath`, `rmos`, `fixture`, `feedrate`, `spindle`, `cam`
-- CI gate [check_no_toolbox_terms.py](scripts/ci/check_no_toolbox_terms.py) enforces separation from ToolBox domain
-
-### Identity Model (v1)
-- Device-local IDs only (`device_learner_id`)—no cloud accounts
-- Secret stored at `data/device_secret.bin`, ID derived via SHA256
-- Multiple learners per device via `local_slot` (1-99)
-
-### Data Storage
-- SQLite database at `data/sgc.sqlite3` (WAL mode)
-- Content-addressed attachments at `data/attachments/<sha256>.<ext>`
-- All data stays on-device (local-first)
-
-## Contracts Quick Reference
-
-| Schema | Purpose |
-|--------|---------|
-| `attachments_manifest_v1` | References large artifacts by hash/URI (no blobs) |
-| `curriculum_catalog_v1` | Lessons/drills metadata catalog |
-| `assignment_v1` | Practice assignments from coach policy |
-| `session_record_v1` | Local session with performance summaries |
-| `coach_feedback_v1` | Structured coaching output (no prompt traces) |
-
-## Development Workflow
-
+**Regenerate hashes (PowerShell):**
 ```powershell
-# Install package (editable + dev deps)
-pip install -e ".[dev]"
-
-# Run tests
-pytest -v
-
-# Initialize local runtime
-sgc init
-
-# Generate next assignment
-sgc next --slot 1
-
-# Ingest a session (stdin)
-echo '{"attempts":[...]}' | sgc ingest-session
-```
-
-### Regenerate SHA256 hashes (PowerShell)
-```powershell
-cd contracts
-Get-ChildItem *.schema.json | % { 
+cd contracts; Get-ChildItem *.schema.json | % { 
   $h = (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower()
   Set-Content ($_.Name -replace '\.json$', '.sha256') $h -NoNewline
 }
 ```
 
-### Run CI gates locally
-```powershell
-python scripts/ci/check_contracts_governance.py --repo-root .
-python scripts/ci/check_no_toolbox_terms.py --repo-root .
+Once `contracts/CONTRACTS_VERSION.json` has `"public_released": true`, v1 schemas become **immutable**.
+
+## Two Coach Implementations
+
+| Location | Purpose | Use When |
+|----------|---------|----------|
+| `runtime/policy.py` | CLI runtime coach (v0) | `sgc` CLI commands |
+| `src/sg_coach/coach_policy.py` | Full evaluation engine | Detailed session analysis with `SessionRecord` models |
+
+Both use dataclass configs (`PolicyConfig`, `CoachPolicyConfig`) with explicit threshold knobs.
+
+## Groove Layer (Musicianship Latent Vector)
+
+The Groove Layer is a **separate concern** from coaching—it drives *accompaniment adaptation*, not pedagogy.
+
+| Domain | Purpose | Example Dimensions |
+|--------|---------|-------------------|
+| Time & Groove | How player relates to time | `microtiming_bias`, `tempo_stability`, `swing_affinity` |
+| Motor Consistency | Physical execution reliability | `attack_consistency`, `fatigue_resilience`, `error_recovery_speed` |
+| Cognitive Load | Complexity absorption capacity | `complexity_tolerance`, `form_memory`, `adaptation_speed` |
+| Interaction Preference | Musical preference (not skill) | `leader_follower_bias`, `repetition_preference`, `density_comfort` |
+
+**Critical boundaries:**
+- Latent values are **never shown** to users—they drive adaptation silently
+- Outputs arrangement control signals (tempo policy, density, loop length)—**not** lessons or feedback
+- Dimensions are `[0.0–1.0]` normalized with slow (trait) vs fast (state) update rates
+- Does NOT include: skill levels, correctness scores, genre labels, achievements
+
+**Update mechanics (v0):**
+- Generic rule: `latent ← (1 − α·w)·latent + (α·w)·evidence`
+- Learning rates: `α_fast=0.20` (state), `α_med=0.08`, `α_slow=0.02` (trait)
+- Eligibility gating: skip update if <12 onsets, confidence <0.5, or unknown grid
+
+**Probing policy:** Every ~8 min, probe preferences (leader/follower, density, repetition) for 30-60s when stability is above threshold—prevents bias lock-in.
+
+**Output contract (arranger-facing):**
+```json
+{
+  "tempo_policy": "follow_player | steady_clock | gentle_nudge",
+  "density_target": "sparse | medium | full",
+  "loop_policy": "none | 2bars | 4bars | 8bars",
+  "change_policy": "avoid_modulation | allow_modulation"
+}
 ```
 
-## Adding/Modifying Contracts
+## Identity Model
 
-1. Edit/create schema in `contracts/`
-2. Regenerate `.sha256` companion
-3. Update `contracts/CHANGELOG.md` with schema stem name
-4. CI will block if any step is missing
+- **No cloud accounts**—device-local only via `device_learner_id`
+- Secret at `data/device_secret.bin`, ID derived via SHA256
+- Multiple learners per device: `local_slot` 1-99 (see `runtime/identity.py`)
 
-## Runtime Extension Points
+## Quick Commands
 
-- **Policy tuning**: Modify `PolicyConfig` in [runtime/policy.py](runtime/policy.py)
-- **Coach logic**: Extend `coach_feedback_from_session()` for new rubric tags
-- **Assignment strategy**: Customize `pick_next_assignment()` scoring
+```powershell
+pip install -e ".[dev]"      # Install with dev deps
+pytest -v                     # Run tests
+sgc init                      # Initialize runtime (creates db + device identity)
+sgc next --slot 1             # Generate assignment for learner slot
+python scripts/ci/check_contracts_governance.py --repo-root .  # Validate contracts locally
+```
+
+## Key Extension Points
+
+- **Assignment scoring**: `pick_next_assignment()` in `runtime/policy.py`—modify ranking logic
+- **Feedback rubrics**: `coach_feedback_from_session()` for new `rubric_tags`
+- **Thresholds**: Adjust `PolicyConfig` or `CoachPolicyConfig` dataclass fields
 
