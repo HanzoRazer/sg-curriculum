@@ -11,3 +11,7 @@ Canonical home for Smart Guitar curriculum + coaching + learner/session state.
 ## Does NOT own
 - CAM / toolpaths / G-code / RMOS authority or artifacts
 - ToolBox contract definitions (only consumes ToolBox safe export bundles)
+
+## CI / Governance
+
+> **Tip:** Run `python scripts/ci/check_contracts_governance.py --debug` locally to see exactly which CHANGELOG lines were scanned when a contract gate fails. Debug output is auto-enabled locally, off in CI.

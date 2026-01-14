@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import argparse, json, re, subprocess, sys
+import argparse, json, os, re, subprocess, sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -49,16 +49,56 @@ def check_sha_format(repo_root: Path) -> List[Violation]:
             v.append(Violation("SHA256_FORMAT", f"{fp.as_posix()} must be 64 lowercase hex only"))
     return v
 
-def check_changelog(repo_root: Path, changed: List[str], base_ref: str) -> List[Violation]:
+def _extract_added_lines(diff: str) -> str:
+    """Extract only added lines from unified diff (no +++ headers)."""
+    return "\n".join(
+        ln[1:]
+        for ln in diff.splitlines()
+        if ln.startswith("+") and not ln.startswith("+++ ")
+    )
+
+def _stem_mentioned(text: str, stem: str) -> bool:
+    """Token-safe match: stem must appear as whole word (not partial)."""
+    pat = re.compile(rf"(?<![A-Za-z0-9_]){re.escape(stem)}(?![A-Za-z0-9_])")
+    return pat.search(text) is not None
+
+def check_changelog(
+    repo_root: Path, changed: List[str], base_ref: str, debug: bool = False
+) -> List[Violation]:
     contract_changes = [p for p in changed if is_schema(p) or is_sha(p)]
     if not contract_changes:
         return []
     if "contracts/CHANGELOG.md" not in changed:
         return [Violation("CHANGELOG_REQUIRED","Contract schema/hash changed but contracts/CHANGELOG.md was not updated.")]
-    diff = run_git(["diff", f"{base_ref}...HEAD", "--", "contracts/CHANGELOG.md"], cwd=repo_root)
-    missing = [s for s in sorted({stem(p) for p in contract_changes}) if s not in diff]
+
+    diff = run_git(
+        ["diff", f"{base_ref}...HEAD", "--", "contracts/CHANGELOG.md"],
+        cwd=repo_root,
+    )
+    added_only = _extract_added_lines(diff)
+
+    if debug:
+        print(
+            "\n[contracts-gov][debug] CHANGELOG added lines scanned:\n"
+            + (added_only or "<no added lines>"),
+            file=sys.stderr,
+        )
+
+    stems = sorted({stem(p) for p in contract_changes})
+    missing = [s for s in stems if not _stem_mentioned(added_only, s)]
+
     if missing:
-        return [Violation("CHANGELOG_MISSING_MENTIONS","CHANGELOG diff must mention: "+", ".join(missing))]
+        # Always print scanned content on failure (developer UX)
+        if not debug:
+            print(
+                "\n[contracts-gov][debug] CHANGELOG added lines scanned:\n"
+                + (added_only or "<no added lines>"),
+                file=sys.stderr,
+            )
+        return [Violation(
+            "CHANGELOG_MISSING_MENTIONS",
+            "contracts/CHANGELOG.md added lines must mention each changed contract: " + ", ".join(missing),
+        )]
     return []
 
 def check_immutability(repo_root: Path, changed: List[str]) -> List[Violation]:
@@ -74,13 +114,21 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo-root", default=".")
     ap.add_argument("--base-ref", default="origin/main")
+    # Debug defaults: enabled locally, disabled in CI (CI=true)
+    default_debug = "CI" not in os.environ
+    ap.add_argument(
+        "--debug",
+        action="store_true",
+        default=default_debug,
+        help="Print debug information (auto-enabled locally, off in CI unless explicitly set).",
+    )
     a = ap.parse_args()
     repo = Path(a.repo_root).resolve()
     try:
         ch = changed_files(repo, a.base_ref)
         violations = []
         violations += check_sha_format(repo)
-        violations += check_changelog(repo, ch, a.base_ref)
+        violations += check_changelog(repo, ch, a.base_ref, debug=a.debug)
         violations += check_immutability(repo, ch)
     except Exception as e:
         print("[contracts-gov] ERROR:", e, file=sys.stderr)
