@@ -1,0 +1,54 @@
+name: CBSP21 Coverage Gate
+
+on:
+  pull_request:
+    paths:
+      - "cbsp21/**"
+      - "scripts/cbsp21/**"
+  push:
+    branches: [main]
+    paths:
+      - "cbsp21/**"
+      - "scripts/cbsp21/**"
+
+jobs:
+  cbsp21-coverage:
+    runs-on: ubuntu-latest
+
+    env:
+      CBSP21_THRESHOLD: "0.95"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check for CBSP21 directories
+        id: check-dirs
+        run: |
+          if [ -d "cbsp21/full_source" ] && [ -d "cbsp21/scanned_source" ]; then
+            echo "run_coverage=true" >> $GITHUB_OUTPUT
+          else
+            echo "run_coverage=false" >> $GITHUB_OUTPUT
+            echo "CBSP21 directories not present - skipping coverage check"
+          fi
+
+      - name: CBSP21 Coverage + Audit
+        if: steps.check-dirs.outputs.run_coverage == 'true'
+        run: |
+          python scripts/cbsp21/cbsp21_coverage_with_audit.py \
+            --full cbsp21/full_source \
+            --scanned cbsp21/scanned_source \
+            --threshold $CBSP21_THRESHOLD \
+            --log logs/cbsp21_audit.jsonl
+
+      - name: Upload audit log
+        if: steps.check-dirs.outputs.run_coverage == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbsp21_audit
+          path: logs/cbsp21_audit.jsonl

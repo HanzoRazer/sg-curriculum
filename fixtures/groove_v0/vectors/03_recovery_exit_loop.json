@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "name": "03_recovery_exit_loop",
+    "window_duration_ms": 15000
+  },
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-03",
+  "engine_context": {
+    "tempo_bpm_target": 110,
+    "time_signature": "4/4",
+    "grid": "eighth",
+    "feel": "straight"
+  },
+  "prior_state_hint": {
+    "last_loop_policy": "micro_loop",
+    "last_density": "sparse"
+  },
+  "events": [
+    { "t_onset_ms": 0, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 273, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 545, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 818, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 1091, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 1364, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 1636, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 1909, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 2182, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 2455, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 2727, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 3000, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 3273, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 3545, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 },
+    { "t_onset_ms": 3818, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.95 }
+  ]
+}

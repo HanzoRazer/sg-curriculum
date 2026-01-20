@@ -1,0 +1,86 @@
+{
+  "schema_id": "groove_layer_control",
+  "schema_version": "v0",
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-05",
+  "expected_by_window": [
+    {
+      "label": "A_stable_before_probe",
+      "controls": {
+        "tempo": {
+          "policy": "follow_player",
+          "nudge_strength": 0.2,
+          "max_delta_pct_per_min": 5
+        },
+        "arrangement": {
+          "density_target": "medium",
+          "instrumentation_policy": "keep_layers",
+          "dynamics_follow": "soft_follow"
+        },
+        "loop": {
+          "policy": "none",
+          "length_bars": 4,
+          "exit_condition": "manual"
+        },
+        "feel": {
+          "feel_policy": "straight",
+          "grid": "eighth",
+          "click_policy": "subtle"
+        },
+        "assist": {
+          "assist_policy": "standard",
+          "ghost_drums": "off",
+          "count_in_bars": 1
+        },
+        "change_policy": {
+          "allow_modulation": false,
+          "allow_tempo_change_events": true,
+          "allow_density_probes": true
+        }
+      },
+      "rationale": {
+        "trigger": "manual_override",
+        "notes": "Stable baseline."
+      }
+    },
+    {
+      "label": "B_probe_density_hurts",
+      "controls": {
+        "tempo": {
+          "policy": "steady_clock",
+          "nudge_strength": 0.3,
+          "max_delta_pct_per_min": 3
+        },
+        "arrangement": {
+          "density_target": "sparse",
+          "instrumentation_policy": "reduce_layers",
+          "dynamics_follow": "fixed"
+        },
+        "loop": {
+          "policy": "micro_loop",
+          "length_bars": 4,
+          "exit_condition": "stability_recovered"
+        },
+        "feel": {
+          "feel_policy": "straight",
+          "grid": "eighth",
+          "click_policy": "prominent"
+        },
+        "assist": {
+          "assist_policy": "supportive",
+          "ghost_drums": "light",
+          "count_in_bars": 2
+        },
+        "change_policy": {
+          "allow_modulation": false,
+          "allow_tempo_change_events": false,
+          "allow_density_probes": false
+        }
+      },
+      "rationale": {
+        "trigger": "preference_probe",
+        "notes": "Probe detected negative response; revert and gate further probes."
+      }
+    }
+  ]
+}

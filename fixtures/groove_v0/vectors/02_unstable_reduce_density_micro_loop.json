@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "name": "02_unstable_reduce_density_micro_loop",
+    "window_duration_ms": 15000
+  },
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-02",
+  "engine_context": {
+    "tempo_bpm_target": 110,
+    "time_signature": "4/4",
+    "grid": "eighth",
+    "feel": "straight"
+  },
+  "events": [
+    { "t_onset_ms": 0, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.9 },
+    { "t_onset_ms": 280, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.9 },
+    { "t_onset_ms": 600, "event_type": "strum_onset", "strength": 0.7, "confidence": 0.9 },
+    { "t_onset_ms": 980, "event_type": "strum_onset", "strength": 0.8, "confidence": 0.8 },
+    { "t_onset_ms": 1210, "event_type": "strum_onset", "strength": 0.8, "confidence": 0.8 },
+    { "t_onset_ms": 1700, "event_type": "strum_onset", "strength": 0.8, "confidence": 0.8 },
+    { "t_onset_ms": 2100, "event_type": "strum_onset", "strength": 0.85, "confidence": 0.75 },
+    { "t_onset_ms": 2550, "event_type": "strum_onset", "strength": 0.85, "confidence": 0.75 },
+    { "t_onset_ms": 3300, "event_type": "strum_onset", "strength": 0.9, "confidence": 0.7 }
+  ]
+}

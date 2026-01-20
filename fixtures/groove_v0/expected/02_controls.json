@@ -1,0 +1,47 @@
+{
+  "schema_id": "groove_layer_control",
+  "schema_version": "v0",
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-02",
+  "window": {
+    "duration_ms": 15000,
+    "event_count_min": 8,
+    "confidence_min": 0.5
+  },
+  "controls": {
+    "tempo": {
+      "policy": "steady_clock",
+      "nudge_strength": 0.4,
+      "max_delta_pct_per_min": 3
+    },
+    "arrangement": {
+      "density_target": "sparse",
+      "instrumentation_policy": "reduce_layers",
+      "dynamics_follow": "fixed"
+    },
+    "loop": {
+      "policy": "micro_loop",
+      "length_bars": 4,
+      "exit_condition": "stability_recovered"
+    },
+    "feel": {
+      "feel_policy": "straight",
+      "grid": "eighth",
+      "click_policy": "prominent"
+    },
+    "assist": {
+      "assist_policy": "supportive",
+      "ghost_drums": "light",
+      "count_in_bars": 2
+    },
+    "change_policy": {
+      "allow_modulation": false,
+      "allow_tempo_change_events": false,
+      "allow_density_probes": false
+    }
+  },
+  "rationale": {
+    "trigger": "low_tempo_stability",
+    "notes": "Detected instability; simplifying and gating changes until stable."
+  }
+}

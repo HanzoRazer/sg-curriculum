@@ -1,0 +1,12 @@
+{
+  "description": "Paths exempt from CBSP21 manifest requirements",
+  "exempt_patterns": [
+    "docs/**",
+    "*.md",
+    "**/__pycache__/**",
+    "**/*.egg-info/**",
+    ".git/**",
+    ".venv/**",
+    ".pytest_cache/**"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "name": "05_probe_density_ab",
+    "window_duration_ms": 15000
+  },
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-05",
+  "engine_context": {
+    "tempo_bpm_target": 95,
+    "time_signature": "4/4",
+    "grid": "eighth",
+    "feel": "straight"
+  },
+  "windows": [
+    {
+      "label": "A_stable_before_probe",
+      "events": [
+        { "t_onset_ms": 0, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 315, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 631, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 947, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 1263, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 1579, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 1895, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 2211, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 2526, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 2842, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 3158, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 3474, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 3789, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 4105, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 },
+        { "t_onset_ms": 4421, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.95 }
+      ]
+    },
+    {
+      "label": "B_probe_density_hurts",
+      "events": [
+        { "t_onset_ms": 15000, "event_type": "strum_onset", "strength": 0.75, "confidence": 0.85 },
+        { "t_onset_ms": 15340, "event_type": "strum_onset", "strength": 0.75, "confidence": 0.85 },
+        { "t_onset_ms": 15980, "event_type": "strum_onset", "strength": 0.75, "confidence": 0.85 },
+        { "t_onset_ms": 16800, "event_type": "strum_onset", "strength": 0.8, "confidence": 0.8 },
+        { "t_onset_ms": 17500, "event_type": "strum_onset", "strength": 0.8, "confidence": 0.75 },
+        { "t_onset_ms": 18400, "event_type": "strum_onset", "strength": 0.85, "confidence": 0.7 }
+      ]
+    }
+  ]
+}

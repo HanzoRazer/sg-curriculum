@@ -1,0 +1,33 @@
+name: CBSP21 PR Gate
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "runtime/**"
+      - "contracts/**"
+      - "tests/**"
+      - "fixtures/**"
+      - "scripts/ci/**"
+
+jobs:
+  cbsp21-pr-gate:
+    runs-on: ubuntu-latest
+
+    env:
+      CBSP21_MIN_COVERAGE: "0.95"
+      CBSP21_MANIFEST_PATH: ".cbsp21/patch_input.json"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: CBSP21 PR Gate Check
+        run: python scripts/ci/check_cbsp21_gate.py

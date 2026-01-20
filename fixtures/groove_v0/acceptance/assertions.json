@@ -1,0 +1,68 @@
+{
+  "v0_assertions": [
+    {
+      "name": "Stable_play_follows_player",
+      "when": { "vector": "01_stable_follow_player" },
+      "expect": {
+        "controls.tempo.policy": "follow_player",
+        "controls.loop.policy": "none",
+        "controls.arrangement.density_target": "medium"
+      }
+    },
+    {
+      "name": "No_probe_during_instability",
+      "when": { "vector": "02_unstable_reduce_density_micro_loop" },
+      "expect": { "controls.change_policy.allow_density_probes": false }
+    },
+    {
+      "name": "Micro_loop_on_instability",
+      "when": { "vector": "02_unstable_reduce_density_micro_loop" },
+      "expect": { "controls.loop.policy": "micro_loop" }
+    },
+    {
+      "name": "Reduce_density_on_instability",
+      "when": { "vector": "02_unstable_reduce_density_micro_loop" },
+      "expect": { "controls.arrangement.density_target": "sparse" }
+    },
+    {
+      "name": "Steady_clock_on_instability",
+      "when": { "vector": "02_unstable_reduce_density_micro_loop" },
+      "expect": { "controls.tempo.policy": "steady_clock" }
+    },
+    {
+      "name": "Deescalate_after_recovery",
+      "when": { "vector": "03_recovery_exit_loop" },
+      "expect_any": [
+        { "controls.arrangement.density_target": "medium" },
+        { "controls.assist.assist_policy": "standard" }
+      ]
+    },
+    {
+      "name": "No_grid_claims_without_context",
+      "when": { "vector": "04_missing_tempo_freeze_conservative" },
+      "expect": {
+        "controls.change_policy.allow_density_probes": false,
+        "controls.tempo.max_delta_pct_per_min": 0,
+        "controls.tempo.nudge_strength": 0.0
+      }
+    },
+    {
+      "name": "Steady_clock_without_context",
+      "when": { "vector": "04_missing_tempo_freeze_conservative" },
+      "expect": { "controls.tempo.policy": "steady_clock" }
+    },
+    {
+      "name": "Probe_allowed_when_stable",
+      "when": { "vector": "05_probe_density_ab", "window": "A_stable_before_probe" },
+      "expect": { "controls.change_policy.allow_density_probes": true }
+    },
+    {
+      "name": "Probe_is_reversible",
+      "when": { "vector": "05_probe_density_ab", "window": "B_probe_density_hurts" },
+      "expect": {
+        "controls.arrangement.density_target": "sparse",
+        "controls.change_policy.allow_density_probes": false
+      }
+    }
+  ]
+}

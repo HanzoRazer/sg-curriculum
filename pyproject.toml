@@ -14,7 +14,7 @@ sgc = "runtime.cli:main"
 
 [tool.setuptools.packages.find]
 where = [".", "src"]
-include = ["runtime*", "sg_coach*"]
+include = ["runtime*", "sg_coach*", "sg_groove*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

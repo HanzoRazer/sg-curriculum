@@ -1,0 +1,47 @@
+{
+  "schema_id": "groove_layer_control",
+  "schema_version": "v0",
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-01",
+  "window": {
+    "duration_ms": 15000,
+    "event_count_min": 12,
+    "confidence_min": 0.75
+  },
+  "controls": {
+    "tempo": {
+      "policy": "follow_player",
+      "nudge_strength": 0.2,
+      "max_delta_pct_per_min": 5
+    },
+    "arrangement": {
+      "density_target": "medium",
+      "instrumentation_policy": "keep_layers",
+      "dynamics_follow": "soft_follow"
+    },
+    "loop": {
+      "policy": "none",
+      "length_bars": 4,
+      "exit_condition": "manual"
+    },
+    "feel": {
+      "feel_policy": "straight",
+      "grid": "eighth",
+      "click_policy": "subtle"
+    },
+    "assist": {
+      "assist_policy": "standard",
+      "ghost_drums": "off",
+      "count_in_bars": 1
+    },
+    "change_policy": {
+      "allow_modulation": false,
+      "allow_tempo_change_events": true,
+      "allow_density_probes": true
+    }
+  },
+  "rationale": {
+    "trigger": "manual_override",
+    "notes": "Baseline stable play; no corrective action required."
+  }
+}

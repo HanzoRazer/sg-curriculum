@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "name": "04_missing_tempo_freeze_conservative",
+    "window_duration_ms": 15000
+  },
+  "device_id": "SG-LOCAL-00042",
+  "session_id": "sess-04",
+  "engine_context": null,
+  "events": [
+    { "t_onset_ms": 0, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.8 },
+    { "t_onset_ms": 400, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.8 },
+    { "t_onset_ms": 900, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.8 },
+    { "t_onset_ms": 1500, "event_type": "strum_onset", "strength": 0.6, "confidence": 0.8 }
+  ]
+}
